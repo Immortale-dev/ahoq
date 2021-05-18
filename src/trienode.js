@@ -45,7 +45,7 @@ export class TrieNode {
 	 * @parameters:
 	 *   character: {@char}, node: {@TrieNode}
 	 */
-	addChild(character, node) {
+	setChild(character, node) {
 		this._childs[character] = node;
 	}
 
