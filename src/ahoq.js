@@ -46,11 +46,12 @@ export class AhoQ {
 	
 	_rebuild() {
 		// Create new root node
-		this._trie = new Node();
+		const root = new Node();
+		this._trie = root;
 		
 		// Build trie base structure
 		for(const pat of this._patterns) {
-			const node = this._trie;
+			const node = root;
 			for(const char of pat) {
 				if(!node.getChild(char)) {
 					node.setChild(char, new Node());
@@ -62,9 +63,20 @@ export class AhoQ {
 			node.setPattern(pat);
 		}
 		
-		//TODO: extend with failure links
-		
+		// Use queue to perform an upper manner DP algorithm for filling
+		// up all suffix and output references
 		const queue = new Queue();
+		
+		// Suffix reference of root node should be root node
+		root.setSuffix(root);
+		
+		// Suffix reference of first level nodes should be root node as
+		// the longer suffix of single character strings is empty string
+		for(const ent of root.getChildEntries()){
+			const node = ent[1];
+			node.setSuffix(root);
+			queue.push(node);
+		}
 	}
 	
 	_createIterableSearch(text) {

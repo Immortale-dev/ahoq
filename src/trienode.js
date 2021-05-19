@@ -10,7 +10,16 @@ export class TrieNode {
 		/** Indicates wether specific pattern ends on this node */
 		this._pattern = null;
 
-		/** Stores reference to the longest suffix for current sequense */
+		/**
+		 * Stores reference to the longest suffix for current sequense
+		 *
+		 * Example:
+		 *   1:      b -> c
+		 *   2: a -> b -> c
+		 *                ^
+		 *                |
+		 *  has an reference to the first pattern's "c" node
+		 */
 		this._suffix = null;
 
 		/**
@@ -23,7 +32,7 @@ export class TrieNode {
 		 *  2: a -> b -> c -> d
 		 *               ^
 		 *               |
-		 *  has an output link to the first pattern
+		 *  has an output link to the first pattern's "c" node
 		 */
 		this._out = null;
 	}
@@ -50,6 +59,13 @@ export class TrieNode {
 	 */
 	setChild(character, node) {
 		this._childs[character] = node;
+	}
+
+	/**
+	 * Returns array of child entries
+	 */
+	getChildEntries() {
+		return Object.entries(this._childs);
 	}
 
 	/**
