@@ -1,4 +1,5 @@
-import {TrieNode as Node} from './trienode'
+import {TrieNode as Node} from './trienode';
+import {Queue} from './helpers';
 
 /**
  * Class for building Aho Corasick structure from text patterns and
@@ -62,6 +63,8 @@ export class AhoQ {
 		}
 		
 		//TODO: extend with failure links
+		
+		const queue = new Queue();
 	}
 	
 	_createIterableSearch(text) {

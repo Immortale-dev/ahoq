@@ -10,6 +10,9 @@ export class TrieNode {
 		/** Indicates wether specific pattern ends on this node */
 		this._pattern = null;
 
+		/** Stores reference to the longest suffix for current sequense */
+		this._suffix = null;
+
 		/**
 		 * Indicates wether other pattern ends as a suffix on this node
 		 * In case of multiple patterns ends at the same node, contains
@@ -67,6 +70,16 @@ export class TrieNode {
 	 */
 	setPattern(pattern) {
 		this._pattern = pattern;
+	}
+
+	/**
+	 * Set or unset current node's associated suffix
+	 *
+	 * @parameters:
+	 *   suffix: {@String}|{@null}
+	 */
+	setSuffix(suffix) {
+		this._suffix = suffix;
 	}
 
 	/**
