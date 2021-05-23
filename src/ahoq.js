@@ -1,5 +1,5 @@
 import {TrieNode as Node} from './trienode';
-import {Queue} from './helpers';
+import {Queue} from 'real-queue';
 
 /**
  * Class for building Aho Corasick structure from text patterns and
@@ -76,6 +76,37 @@ export class AhoQ {
 			const node = ent[1];
 			node.setSuffix(root);
 			queue.push(node);
+		}
+		
+		// BFS
+		while(!queue.empty()) {
+			const node = queue.front();
+			queue.pop();
+			
+			for(const ent of node.getChildEntries()) {
+				// Define refs
+				const c = ent[0];
+				const n = ent[1];
+				
+				// Find longest suffix of current path (DP)
+				const suff = node.getSuffix();
+				while(!suff.getChild(c) && suff != root) {
+					suff = suff.getSuffix();
+				}
+				
+				// Set suffix
+				const foundSuffix = suff.getChild(c) || root;
+				n.setSuffix(foundSuffix);
+				
+				queue.push(n);
+			}
+			
+			// Update output reference
+			if(node.getSuffix().getPattern()) {
+				node.setOut(node.getSuffix());
+			} else {
+				node.setOut(node.getSuffix().getOut());
+			}
 		}
 	}
 	

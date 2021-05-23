@@ -20,5 +20,11 @@
     "patterns"
   ],
   "author": "Immortal <web.developer.ukraine@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "jasmine": "^3.7.0"
+  },
+  "dependencies": {
+    "real-queue": "^0.0.1"
+  }
 }

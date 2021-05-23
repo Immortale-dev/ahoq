@@ -3,7 +3,7 @@ export class TrieNode {
 	constructor() {
 		/**
 		 * Map of key/values containing child items of trie. key is
-		 * {@char} and value is {@TrieNode}
+		 * {char} and value is {TrieNode}
 		 */
 		this._childs = {};
 
@@ -40,11 +40,9 @@ export class TrieNode {
 	/**
 	 * Returns child node or {@null} if it doesn't exists
 	 *
-	 * @parameters:
-	 *   character: {@char}
+	 * @param character: {char}
 	 *
-	 * @return:
-	 *   {@TrieNode}|{@null}
+	 * @return {TrieNode|null}
 	 */
 	getChild(character) {
 		if (!this._childs.hasOwnProperty(character)) return null;
@@ -54,8 +52,8 @@ export class TrieNode {
 	/**
 	 * Add child note
 	 *
-	 * @parameters:
-	 *   character: {@char}, node: {@TrieNode}
+	 * @param character: {char}
+	 * @param node: {TrieNode}
 	 */
 	setChild(character, node) {
 		this._childs[character] = node;
@@ -71,38 +69,61 @@ export class TrieNode {
 	/**
 	 * Removes child node
 	 *
-	 * @parameters:
-	 *   character: {@char}
+	 * @param character: {char}
 	 */
 	removeChild(character) {
 		delete this._childs[character];
 	}
 
 	/**
+	 * Get current node's associated pattern
+	 *
+	 * @return {string|null}
+	 */
+	getPattern() {
+		return this._pattern;
+	}
+
+	/**
 	 * Set or unset current node's associated pattern
 	 *
-	 * @parameters:
-	 *   pattern: {@String}|{@null}
+	 * @param pattern: {String|null}
 	 */
 	setPattern(pattern) {
 		this._pattern = pattern;
 	}
 
 	/**
-	 * Set or unset current node's associated suffix
+	 * Returns associated with current node suffix reference
 	 *
-	 * @parameters:
-	 *   suffix: {@String}|{@null}
+	 * @return {TrieNode|null}
+	 */
+	getSuffix() {
+		return this._suffix;
+	}
+
+	/**
+	 * Set or unset current node's associated suffix node
+	 *
+	 * @param suffix: {String|null}
 	 */
 	setSuffix(suffix) {
 		this._suffix = suffix;
 	}
 
 	/**
+	 * Returns an output node
+	 *
+	 * @return {TrieNode|null}
+	 */
+	getOut() {
+		return this._out;
+	}
+
+	/**
 	 * Set/unset an output node
 	 *
-	 * @parameters:
-	 *   out: {@TrieNode}
+	 * @param out: {TrieNode|null}
 	 */
 	setOut(out) {
 		this._out = out;
