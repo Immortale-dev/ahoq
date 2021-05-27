@@ -1,4 +1,4 @@
-import {TrieNode as Node} from './trienode';
+import {TrieNode as Node} from './trienode.js';
 import {Queue} from 'real-queue';
 
 /**
@@ -16,12 +16,13 @@ export class AhoQ {
 	 */
 	constructor(patterns) {
 		this._trie = null;
+		this._patterns = new Set();
 
-		if (!patterns) return;
+		if (patterns) {
+			this._validatePatterns(patterns);
+			this._patterns = new Set(patterns.map(str => new String(str)));
+		}
 
-		this._validatePatterns(patterns);
-
-		this._patterns = new Set(patterns.map(str => new String(str)));
 		this._rebuild();
 	}
 
@@ -36,6 +37,7 @@ export class AhoQ {
 		for(const pat of patterns) {
 			this._patterns.add(pat);
 		}
+		this._rebuild();
 	}
 
 	/**
@@ -49,19 +51,23 @@ export class AhoQ {
 		for(const pat of patterns) {
 			this._patterns.delete(pat);
 		}
+		this._rebuild();
 	}
 
 	/**
 	 * Returns iterable object that will search for the matches in text
 	 * by lazy manner.
 	 *
-	 * @param options: {AhoqOptions}
+	 * @param options: {AhoQOptions}
 	 *
-	 * @return {AhoqSearch}
+	 * @return {AhoQSearch}
 	 */
 	search(text, options) {
+		if(!options){
+			options = {};
+		}
 		if(!options.report) {
-			options.report = Ahoq.REPORT.MATCH;
+			options.report = AhoQ.REPORT.MATCH;
 		}
 
 		return this._createIterableSearch(text, options);
@@ -70,10 +76,11 @@ export class AhoQ {
 	/**
 	 * Returns all matches of patterns in text
 	 *
-	 * @return {AhoqSearchResult[]}
+	 * @return {AhoQSearchResult[]}
 	 */
 	find(text) {
-		return [...this._createIterableSearch(text)];
+		const search = this._createIterableSearch(text);
+		return [...search].flat();
 	}
 
 	// Rebuilds the trie
@@ -84,7 +91,7 @@ export class AhoQ {
 
 		// Build trie base structure
 		for(const pat of this._patterns) {
-			const node = root;
+			let node = root;
 			for(const char of pat) {
 				if(!node.getChild(char)) {
 					node.setChild(char, new Node());
@@ -122,7 +129,7 @@ export class AhoQ {
 				const n = ent[1];
 
 				// Find longest suffix of current path (DP)
-				const suff = node.getSuffix();
+				let suff = node.getSuffix();
 				while(!suff.getChild(c) && suff != root) {
 					suff = suff.getSuffix();
 				}
@@ -153,7 +160,7 @@ export class AhoQ {
 		}
 
 		for(const pat of patterns){
-			if(typeof pat != 'string' || !(pat instanceof String) ) {
+			if(typeof pat != 'string' && !(pat instanceof String) ) {
 				throw new Error('patterns shoukd be an Array of strings');
 			}
 		}
@@ -161,9 +168,9 @@ export class AhoQ {
 }
 
 /**
- * Ahoq::search options type
+ * AhoQ::search options type
  */
-export class AhoqOptions {
+export class AhoQOptions {
 	constructor() {
 		this.report = null;
 	}
@@ -178,7 +185,7 @@ export class AhoQSearch {
 		this._trie = trie;
 		this._pos = 0;
 		this._state = null;
-		this._options = options;
+		this._options = options || {};
 
 		this[Symbol.iterator] = () => {
 			return this;
@@ -207,7 +214,7 @@ export class AhoQSearch {
 	 * Reset current state to the root of the trie.
 	 */
 	reset() {
-		this.state = null;
+		this._state = this._trie;
 	}
 
 	/**
@@ -221,9 +228,9 @@ export class AhoQSearch {
 	/**
 	 * Get next occurence.
 	 *
-	 * @param report: {Ahoq.REPORT} - type of report
+	 * @param report: {AhoQ.REPORT} - type of report
 	 *
-	 * @return {AhoqSearchResult}
+	 * @return {AhoQSearchResult}
 	 */
 	next(report) {
 		if(report == undefined) {
@@ -232,57 +239,62 @@ export class AhoQSearch {
 
 		// Start from root node
 		if(!this._state) {
-			this._state = this._trie; // root
+			this.reset(); // root
 		}
 
 		// Search char by char
 		while(this._pos < this._text.length) {
-			const c = this._text[this._pos];
+			let c = this._text[this._pos];
 
 			while(!this._state.getChild(c) && this._state !== this._trie) {
 				this._state = this._state.getSuffix();
 			}
 			while(!this._state.getChild(c)) {
-				++this._pos;
+				if(report === AhoQ.REPORT.STEP) {
+					++this._pos;
+					return {value:[], done: false};
+				}
+				if(++this._pos >= this._text.length) return {done: true};
+				c = this._text[this._pos];
 			}
 
-			if(this._state.getChild(c)) {
-				// Move by trie
-				this._state = this._state.getChild(c);
+			// Move by trie
+			this._state = this._state.getChild(c);
 
-				// Collect matches
-				const ret = [];
-				const pat = this._state.getPattern();
-				if(pat) {
-					ret.push(new AhoqSearchResult(pat, this._pos - pat.length + 1));
-				}
-				let outNode = this._state.getOut();
-				while(outNode) {
-					const pat = outNode.getPattern();
-					ret.push(new AhoqSearchResult(pat, this._pos - pat.length + 1));
-					outNode = outNode.getOut();
-				}
+			// Collect matches
+			const ret = [];
+			const pat = this._state.getPattern();
+			if(pat) {
+				ret.push(new AhoQSearchResult(pat, this._pos - pat.length + 1));
+			}
+			let outNode = this._state.getOut();
+			while(outNode) {
+				const pat = outNode.getPattern();
+				ret.push(new AhoQSearchResult(pat, this._pos - pat.length + 1));
+				outNode = outNode.getOut();
+			}
 
-				++this._pos;
+			++this._pos;
 
-				if(ret.length || report === Ahoq.REPORT.STEP) {
-					return {value: ret, done: false};
-				}
+			if(ret.length || report === AhoQ.REPORT.STEP) {
+				return {value: ret, done: false};
 			}
 		}
+
+		return {done: true};
 	}
 }
 
 /** Search result type */
-export class AhoqSearchResult {
-	constructor(patterns, index) {
-		this.patterns = patterns;
+export class AhoQSearchResult {
+	constructor(pattern, index) {
+		this.pattern = pattern;
 		this.index = index;
 	}
 }
 
 /** Report options */
-Ahoq.REPORT = {
+AhoQ.REPORT = {
 	MATCH: 0,
 	STEP: 1
 };

@@ -3,12 +3,13 @@
   "version": "0.0.2",
   "description": "Aho Corasick pattern seraching algorithm implementation",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "node test.js"
+    "test": "npx jasmine"
   },
   "repository": {
     "type": "git",
-    "url": "."
+    "url": "git+https://github.com/Immortale-dev/ahoq.git"
   },
   "keywords": [
     "Aho",
