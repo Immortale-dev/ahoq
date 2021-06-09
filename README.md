@@ -119,7 +119,42 @@ Class contain 2 properties:
 
 representing the **pattern** found in the text (notice, pattern returned not as primitive type, but as a *String object*) and **index** in text where the pattern *starts*.
 
+## Example
+
+```javascript
+import {AhoQ} from 'ahoq'
+
+const ahoq = new AhoQ(['ab', 'aa', 'bc', 'abc', 'aaa', 'aab']);
+let result = ahoq.find('aabbcaabc');
+
+/**
+ * result:
+ * [
+ *  {index:0, pattern: 'aa'},
+ *  {index:0, pattern: 'aab'},
+ *  {index:1, pattern: 'ab'},
+ *  {index:3, pattern: 'bc'},
+ *  {index:5, pattern: 'aa'},
+ *  {index:5, pattern: 'aab'},
+ *  {index:6, pattern: 'ab'},
+ *  {index:6, pattern: 'abc'},
+ *  {index:7, pattern: 'bc'}
+ * ]
+ */
+
+ahoq.remove(['ab', 'bc', 'aaa', 'aa']);
+const search = ahoq.search('asdasabcsdaabbbasd');
+
+for (const it of search) {
+	// it - contains next results
+	// you can change position in the text, or reset the state
+	// or whatever
+}
+
+```
+
 ## Time complexity
+
 - **O(n + r)** - for searching, where *n* corresponds to the length of searching text, and *r* represents the number of found 
 - **O(m)** - for preparing (building internal structures), where *m* represents the sum of all the pattern lengths used in search.
 
