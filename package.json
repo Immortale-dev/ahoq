@@ -1,6 +1,6 @@
 {
   "name": "ahoq",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Aho Corasick pattern seraching algorithm implementation",
   "main": "index.js",
   "type": "module",

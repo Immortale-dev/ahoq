@@ -1,6 +1,6 @@
 # Aho Corasick JS
 
-Aho Corasick pattern search algorithm that provides linear time search searching of bunch of patterns.
+[Aho Corasick](https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm) pattern search algorithm that provides linear time search searching of bunch of patterns.
  
 **Time complexity:** _O(m)_ for preparation and _O(n+r)_ for searching where
 * _n_ - length of the searching text
